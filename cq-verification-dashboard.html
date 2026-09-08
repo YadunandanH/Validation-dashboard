@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Qualification review — verification summary</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F6F8FA;
+  --panel:#FFFFFF;
+  --ink:#16202E;
+  --ink-soft:#5A6878;
+  --ink-faint:#8C99A8;
+  --rule:#DDE3EA;
+  --rule-strong:#C3CCD7;
+  --blue:#1F4E9C;
+  --blue-wash:#EAF0F9;
+  --cleared:#1B6B48;
+  --review:#A66A00;
+  --deficiency:#A32B24;
+  --track:#E7ECF2;
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"Instrument Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  font-size:15px;
+  line-height:1.5;
+  font-variant-numeric:tabular-nums;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1120px;margin:0 auto;padding:var(--s5) var(--s5) var(--s7)}
+
+.masthead{
+  display:flex;flex-wrap:wrap;gap:var(--s4);
+  align-items:flex-end;justify-content:space-between;
+  padding-bottom:var(--s4);
+  border-bottom:1px solid var(--rule);
+}
+.masthead h1{font-size:20px;font-weight:600;letter-spacing:-.01em;margin:0}
+.masthead p{margin:var(--s1) 0 0;color:var(--ink-soft);font-size:14px}
+.scope{display:flex;gap:var(--s2);align-items:center}
+.scope button{
+  font:inherit;font-size:13px;font-weight:500;
+  padding:7px 13px;border-radius:3px;cursor:pointer;
+  background:var(--panel);color:var(--ink-soft);
+  border:1px solid var(--rule-strong);
+}
+.scope button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.scope button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+
+.panel{background:var(--panel);border:1px solid var(--rule);border-radius:3px;padding:var(--s5)}
+.panel h2{font-size:16px;font-weight:600;margin:0 0 var(--s1);letter-spacing:-.005em}
+.panel .note{margin:0 0 var(--s5);color:var(--ink-faint);font-size:13px}
+.grid{display:grid;gap:var(--s4);margin-top:var(--s4)}
+.cols-2{grid-template-columns:1fr 1fr}
+@media(max-width:840px){.cols-2{grid-template-columns:1fr}}
+
+.hero{margin-top:var(--s5);display:grid;grid-template-columns:1fr 250px;gap:var(--s6)}
+@media(max-width:840px){.hero{grid-template-columns:1fr;gap:var(--s5)}}
+.stage{display:grid;grid-template-columns:76px 1fr;gap:var(--s4);align-items:baseline;margin-bottom:var(--s4)}
+.stage .qty{text-align:right;font-size:22px;font-weight:600;letter-spacing:-.02em}
+.stage .lbl{font-size:14px;color:var(--ink-soft);margin-bottom:6px}
+.stage .lbl b{color:var(--ink);font-weight:500}
+.bar{height:13px;background:var(--track);border-radius:2px;overflow:hidden}
+.bar span{
+  display:block;height:100%;width:0;border-radius:2px;
+  transition:width .9s cubic-bezier(.22,.61,.36,1);
+}
+.f-total span{background:var(--ink)}
+.f-clear span{background:var(--cleared)}
+.f-flag  span{background:var(--deficiency)}
+.f-esc   span{background:var(--review)}
+
+.punchline{border-left:3px solid var(--blue);padding-left:var(--s4);align-self:center}
+.punchline .big{font-size:46px;font-weight:700;letter-spacing:-.035em;line-height:1;color:var(--blue)}
+.punchline p{margin:var(--s3) 0 0;font-size:14px;color:var(--ink-soft);max-width:30ch}
+
+.outcome{display:flex;gap:var(--s5);flex-wrap:wrap;margin-top:var(--s5);padding-top:var(--s5);border-top:1px solid var(--rule)}
+.outcome div{flex:1 1 200px}
+.outcome .k{font-size:13px;color:var(--ink-soft);margin-bottom:var(--s1)}
+.outcome .v{font-size:26px;font-weight:600;letter-spacing:-.02em}
+.outcome .v em{font-style:normal;font-size:15px;font-weight:400;color:var(--ink-faint);margin-left:6px}
+
+.basis{background:var(--blue-wash);border-radius:3px;padding:var(--s3) var(--s4);font-size:13px;color:#26456F;margin-bottom:var(--s4)}
+.tally{display:flex;gap:var(--s5);margin-bottom:var(--s4);flex-wrap:wrap}
+.tally div{flex:1 1 120px}
+.tally .v{font-size:24px;font-weight:600;letter-spacing:-.02em}
+.tally .k{font-size:13px;color:var(--ink-soft)}
+.miss{border-left:3px solid var(--deficiency);padding:var(--s2) 0 var(--s2) var(--s3);margin-bottom:var(--s3);font-size:13.5px}
+.miss b{font-weight:500}
+.miss span{display:block;color:var(--ink-soft);margin-top:2px}
+
+.trend{display:flex;align-items:flex-end;gap:var(--s4);height:132px;margin-bottom:var(--s3)}
+.trend div{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:var(--s2)}
+.trend i{display:block;width:100%;background:var(--blue);border-radius:2px 2px 0 0;font-style:normal}
+.trend .pc{font-size:14px;font-weight:600}
+.trend .mo{font-size:12.5px;color:var(--ink-faint)}
+
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{
+  text-align:left;font-weight:500;font-size:13px;color:var(--ink-soft);
+  padding:0 var(--s3) var(--s2);border-bottom:1px solid var(--rule-strong);
+}
+th.num,td.num{text-align:right}
+td{padding:var(--s3);border-bottom:1px solid var(--rule);vertical-align:middle}
+tbody tr:last-child td{border-bottom:0}
+td.rule{font-weight:500;border-left:3px solid transparent}
+tr.weak td.rule{border-left-color:var(--review)}
+.split{display:flex;height:9px;border-radius:2px;overflow:hidden;min-width:110px;background:var(--track)}
+.split i{display:block;height:100%;font-style:normal}
+.split .a{background:var(--cleared)}
+.split .e{background:var(--review)}
+.split .r{background:var(--deficiency)}
+.legend{display:flex;gap:var(--s4);margin-top:var(--s4);font-size:13px;color:var(--ink-soft);flex-wrap:wrap}
+.legend span{display:flex;align-items:center;gap:6px}
+.legend i{width:9px;height:9px;border-radius:2px;font-style:normal}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;gap:var(--s5);border-bottom:2px solid var(--ink)}
+.tabs button{
+  font:inherit;font-size:14px;font-weight:500;
+  background:none;border:0;padding:var(--s3) 0;cursor:pointer;
+  color:var(--ink-faint);position:relative;
+}
+.tabs button[aria-selected="true"]{color:var(--ink)}
+.tabs button[aria-selected="true"]::after{
+  content:"";position:absolute;left:0;right:0;bottom:-2px;height:2px;background:var(--blue);
+}
+.tabs button:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+.tabs .flag{
+  display:inline-block;width:7px;height:7px;border-radius:50%;
+  background:var(--cleared);margin-left:7px;vertical-align:middle;
+}
+[hidden]{display:none !important}
+
+/* ---------- release gate ---------- */
+.release{
+  background:var(--panel);border:1px solid var(--rule);border-radius:3px;
+  border-left:3px solid var(--cleared);
+  padding:var(--s4) var(--s5);margin-top:var(--s5);
+}
+.tabpanel{margin-top:0}
+.rel-top{display:flex;flex-wrap:wrap;gap:var(--s3) var(--s4);align-items:baseline;justify-content:space-between}
+.rel-top h2{font-size:16px;font-weight:600;margin:0;letter-spacing:-.005em}
+.rel-top h2 span{font-weight:400;color:var(--ink-soft)}
+.verdict{font-size:13px;font-weight:500;color:var(--cleared)}
+.verdict.blocked{color:var(--deficiency)}
+.rel-note{margin:var(--s1) 0 0;font-size:13px;color:var(--ink-faint)}
+
+.rel-stats{display:flex;flex-wrap:wrap;gap:var(--s5);margin:var(--s4) 0 0}
+.rel-stats div{flex:1 1 150px}
+.rel-stats .k{font-size:13px;color:var(--ink-soft);margin-bottom:2px}
+.rel-stats .v{font-size:22px;font-weight:600;letter-spacing:-.02em}
+.rel-stats .v u{text-decoration:none;font-size:13px;font-weight:500;margin-left:6px}
+.rel-stats .up{color:var(--cleared)}
+.rel-stats .down{color:var(--deficiency)}
+.rel-stats .v em{font-style:normal;font-size:13px;font-weight:400;color:var(--ink-faint);margin-left:6px}
+
+.rel-split{display:grid;grid-template-columns:1fr 1fr;gap:var(--s6);margin-top:var(--s5);padding-top:var(--s4);border-top:1px solid var(--rule)}
+@media(max-width:840px){.rel-split{grid-template-columns:1fr;gap:var(--s5)}}
+.rel-split h3{font-size:13.5px;font-weight:500;color:var(--ink-soft);margin:0 0 var(--s3)}
+
+.pkgrow{display:flex;justify-content:space-between;align-items:baseline;gap:var(--s3);padding:7px 0;border-bottom:1px solid var(--rule);font-size:13.5px}
+.pkgrow:last-child{border-bottom:0}
+.pkgrow .res{font-weight:500;color:var(--cleared);white-space:nowrap}
+.pkgrow .lock{font-size:12px;color:var(--blue);background:var(--blue-wash);padding:1px 6px;border-radius:2px;margin-left:6px;font-weight:500}
+
+.diffrow{padding:7px 0 7px var(--s3);border-left:3px solid var(--cleared);margin-bottom:var(--s2);font-size:13.5px}
+.diffrow.hold{border-left-color:var(--review)}
+.diffrow b{font-weight:500}
+.diffrow span{display:block;color:var(--ink-soft);margin-top:1px}
+
+.history{display:flex;flex-wrap:wrap;gap:var(--s4);margin-top:var(--s4);padding-top:var(--s4);border-top:1px solid var(--rule);font-size:13px;color:var(--ink-soft)}
+.history span b{font-weight:500;color:var(--ink)}
+.history .ok b::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--cleared);margin-right:6px;vertical-align:middle}
+.history .no b::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--deficiency);margin-right:6px;vertical-align:middle}
+
+.checks{display:grid;grid-template-columns:1fr 1fr;gap:0 var(--s6)}
+@media(max-width:840px){.checks{grid-template-columns:1fr}}
+.check{
+  display:grid;grid-template-columns:1fr auto;gap:var(--s4);align-items:baseline;
+  padding:var(--s3) 0 var(--s3) var(--s3);
+  border-bottom:1px solid var(--rule);border-left:3px solid var(--cleared);
+}
+.check.held{border-left-color:var(--review)}
+.check .name{font-weight:500;font-size:14px}
+.check .what{font-size:13px;color:var(--ink-soft);margin-top:2px;max-width:44ch}
+.check .val{text-align:right;white-space:nowrap}
+.check .val b{font-size:19px;font-weight:600;letter-spacing:-.02em}
+.check .val span{display:block;font-size:12.5px;color:var(--ink-faint);margin-top:1px}
+@media(min-width:841px){.checks .check:nth-last-child(-n+2){border-bottom:0}}
+@media(max-width:840px){.checks .check:last-child{border-bottom:0}}
+.tieback{margin:var(--s5) 0 0;padding-top:var(--s4);border-top:1px solid var(--rule);font-size:13.5px;color:var(--ink-soft)}
+.tieback b{color:var(--ink);font-weight:500}
+
+.queue td.pkg{font-weight:500}
+.queue td.why em{font-style:normal;color:var(--ink-faint);font-size:12.5px;display:block;margin-top:2px}
+.queue td.why{color:var(--ink-soft);font-size:13.5px}
+.pill{display:inline-block;padding:2px 8px;border-radius:3px;font-size:12.5px;font-weight:500;margin-right:6px}
+.pill.d{background:#F7E9E8;color:var(--deficiency)}
+.pill.r{background:#FAF0DC;color:#8A5800}
+
+footer{margin-top:var(--s5);font-size:13px;color:var(--ink-faint);line-height:1.6}
+@media(prefers-reduced-motion:reduce){.bar span{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <div>
+      <h1>Qualification review — verification summary</h1>
+      <p id="scope-caption">Batch 2026-W36 · 12 IQ/OQ packages · closed 4 September 2026</p>
+    </div>
+    <div class="scope">
+      <button type="button" data-scope="batch" aria-pressed="true">This batch</button>
+      <button type="button" data-scope="quarter" aria-pressed="false">Last 90 days</button>
+    </div>
+  </header>
+
+  <div class="tabs" role="tablist" aria-label="Dashboard views">
+    <button type="button" role="tab" id="tab-batch" aria-controls="view-batch" aria-selected="true">Batch review</button>
+    <button type="button" role="tab" id="tab-release" aria-controls="view-release" aria-selected="false">Release check<span class="flag" title="Passed"></span></button>
+  </div>
+
+  <div class="tabpanel" id="view-release" role="tabpanel" aria-labelledby="tab-release" hidden>
+  <section class="release">
+    <div class="rel-top">
+      <div>
+        <h2>Release check — <span>version 2.4, in production since 2 September</span></h2>
+        <p class="rel-note">Rerun against the marked-up benchmark before any change to rules, prompts or model reaches a real package.</p>
+      </div>
+      <div class="verdict">Passed — no regressions</div>
+    </div>
+
+    <div class="rel-stats">
+      <div>
+        <div class="k">Known deficiencies caught</div>
+        <div class="v">96<em>of 98</em><u class="up">+2</u></div>
+      </div>
+      <div>
+        <div class="k">False alarms</div>
+        <div class="v">11<u class="up">−6</u></div>
+      </div>
+      <div>
+        <div class="k">Decisions that changed</div>
+        <div class="v">5<em>3 fixed, 2 new holds</em></div>
+      </div>
+      <div>
+        <div class="k">Decisions that broke</div>
+        <div class="v" style="color:var(--cleared)">0<em>gate opens at 0</em></div>
+      </div>
+    </div>
+
+    <div class="rel-split">
+      <div>
+        <h3>Benchmark — 6 packages, 412 marked-up decisions</h3>
+        <div class="pkgrow"><span>IQ-4412 Autoclave AC-201</span><span class="res">18 / 18</span></div>
+        <div class="pkgrow"><span>OQ-3387 WFI Loop Skid</span><span class="res">21 / 22</span></div>
+        <div class="pkgrow"><span>OQ-4108 Lyophilizer LY-1</span><span class="res">17 / 17</span></div>
+        <div class="pkgrow"><span>IQ-2290 CIP Skid CIP-03</span><span class="res">14 / 14</span></div>
+        <div class="pkgrow"><span>OQ-2871 Depyrogenation Tunnel<span class="lock">held back</span></span><span class="res">15 / 16</span></div>
+        <div class="pkgrow"><span>IQ-3140 Purified Water Still<span class="lock">held back</span></span><span class="res">11 / 11</span></div>
+      </div>
+
+      <div>
+        <h3>What changed since version 2.3</h3>
+        <div class="diffrow"><b>OQ-3387 — illegible attachment now held</b><span>The miss found in the August audit. Faint scans are checked for legibility before anything is read from them.</span></div>
+        <div class="diffrow"><b>IQ-2290 — handwritten margins now escalated</b><span>Deviations written outside form fields are sent to a person instead of being cleared.</span></div>
+        <div class="diffrow"><b>OQ-4108 — units normalised before comparison</b><span>°F readings against a °C limit were previously read as out of range.</span></div>
+        <div class="diffrow hold"><b>2 packages now hold an item they used to clear</b><span>Both correct clears. Safer, but costs about 10 minutes of review per batch.</span></div>
+      </div>
+    </div>
+
+    <div class="history">
+      <span class="ok"><b>v2.4</b> passed 2 Sep</span>
+      <span class="ok"><b>v2.3</b> passed 19 Aug</span>
+      <span class="no"><b>v2.2.1</b> blocked 11 Aug — broke calibration date parsing on two packages</span>
+      <span class="ok"><b>v2.2</b> passed 4 Aug</span>
+    </div>
+  </section>
+  </div>
+
+  <div class="tabpanel" id="view-batch" role="tabpanel" aria-labelledby="tab-batch">
+  <section class="panel" style="margin-top:var(--s5)">
+    <h2>Where the review effort went</h2>
+    <p class="note">Every rule check the system ran, and what it left for a person to do.</p>
+
+    <div class="hero">
+      <div>
+        <div class="stage">
+          <div class="qty" data-v="total">1,200</div>
+          <div>
+            <div class="lbl"><b>Rule checks run</b> across all packages</div>
+            <div class="bar f-total"><span></span></div>
+          </div>
+        </div>
+        <div class="stage">
+          <div class="qty" data-v="clear">940</div>
+          <div>
+            <div class="lbl"><b>Cleared automatically</b>, each with a cited page and quote</div>
+            <div class="bar f-clear"><span></span></div>
+          </div>
+        </div>
+        <div class="stage">
+          <div class="qty" data-v="flag">190</div>
+          <div>
+            <div class="lbl"><b>Flagged as deficiencies</b> for a reviewer to confirm</div>
+            <div class="bar f-flag"><span></span></div>
+          </div>
+        </div>
+        <div class="stage">
+          <div class="qty" data-v="esc">70</div>
+          <div>
+            <div class="lbl"><b>Sent back as uncertain</b> rather than guessed at</div>
+            <div class="bar f-esc"><span></span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="punchline">
+        <div class="big" data-v="pct">78%</div>
+        <p>of the checklist no longer needs a person. Reviewers look at <b data-v="human">260</b> items instead of <b data-v="total2">1,200</b>.</p>
+      </div>
+    </div>
+
+    <div class="outcome">
+      <div>
+        <div class="k">Review time per package</div>
+        <div class="v"><span data-v="hrs">2.4</span> h <em>was <span data-v="hrsWas">6.5</span> h</em></div>
+      </div>
+      <div>
+        <div class="k">Execution to approved</div>
+        <div class="v"><span data-v="cyc">3.6</span> days <em>was <span data-v="cycWas">9.2</span></em></div>
+      </div>
+      <div>
+        <div class="k">Reviewer hours returned</div>
+        <div class="v"><span data-v="saved">49</span> h <em><span data-v="savedPer">this batch</span></em></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="grid cols-2">
+
+    <section class="panel">
+      <h2>Did it miss anything?</h2>
+      <p class="note">Checked by re-reviewing a random sample by hand, blind to the system's output.</p>
+
+      <div class="basis">Audited <b>8 packages</b>, <b>640 rule decisions</b> — a random 10% sample plus every package containing a critical deficiency.</div>
+
+      <div class="tally">
+        <div><div class="v" style="color:#1B6B48">238<span style="color:#8C99A8;font-weight:400"> / 240</span></div><div class="k">Deficiencies caught</div></div>
+        <div><div class="v" style="color:#A32B24">2</div><div class="k">Missed by the system</div></div>
+        <div><div class="v" style="color:#A66A00">21</div><div class="k">False alarms, ~3 min each</div></div>
+      </div>
+
+      <div class="miss">
+        <b>OQ-3387 WFI Loop Skid</b> — attachment 4 illegible
+        <span>Scan too faint to read; the system cleared it instead of escalating. Fixed by adding a legibility check before extraction.</span>
+      </div>
+      <div class="miss">
+        <b>IQ-2290 CIP Skid CIP-03</b> — open deviation in a margin note
+        <span>Deviation referenced in handwriting outside the form fields. Handwritten margins are now escalated, never cleared.</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Reviewers are changing fewer findings</h2>
+      <p class="note">Share of flagged findings a reviewer edited or rejected, by month.</p>
+      <div class="trend">
+        <div><span class="pc">22%</span><i style="height:105px"></i><span class="mo">Jun</span></div>
+        <div><span class="pc">17%</span><i style="height:81px"></i><span class="mo">Jul</span></div>
+        <div><span class="pc">13%</span><i style="height:62px"></i><span class="mo">Aug</span></div>
+        <div><span class="pc">11%</span><i style="height:53px"></i><span class="mo">Sep</span></div>
+      </div>
+      <p class="note" style="margin:0">Each correction a reviewer makes is kept and fed back as a test case, so the same mistake is caught before the next batch.</p>
+    </section>
+  </div>
+
+  <section class="panel" style="margin-top:16px">
+    <h2>How the system checks itself</h2>
+    <p class="note">These ran on all <span data-v="pkgCount">12</span> packages, not a sample. None of them need a reviewer or a known answer — the system is checked against the document and against itself.</p>
+
+    <div class="checks">
+      <div class="check held">
+        <div>
+          <div class="name">Every finding traces back to the page</div>
+          <div class="what">The quoted text must actually appear where the system says it does. Anything it can't point to is held, not reported.</div>
+        </div>
+        <div class="val"><b data-v="k1">99.7%</b><span data-v="k1h">4 held</span></div>
+      </div>
+
+      <div class="check held">
+        <div>
+          <div class="name">Numbers are recalculated, not judged</div>
+          <div class="what">The reading and the acceptance limit are pulled out, then the pass/fail is computed in code. A disagreement means the reading was misread.</div>
+        </div>
+        <div class="val"><b data-v="k2">99.2%</b><span data-v="k2h">9 held</span></div>
+      </div>
+
+      <div class="check held">
+        <div>
+          <div class="name">Same answer when asked again</div>
+          <div class="what">Each check runs three times. If the answers differ, the item goes to a person instead of the system picking one.</div>
+        </div>
+        <div class="val"><b data-v="k3">97.8%</b><span data-v="k3h">26 held</span></div>
+      </div>
+
+      <div class="check held">
+        <div>
+          <div class="name">A second reader agrees</div>
+          <div class="what">An independent checker reviews the same page without seeing the first verdict. Disagreements go to review.</div>
+        </div>
+        <div class="val"><b data-v="k4">96.4%</b><span data-v="k4h">43 held</span></div>
+      </div>
+
+      <div class="check held">
+        <div>
+          <div class="name">Nothing was skipped</div>
+          <div class="what">Every rule returns an explicit answer and every page is read at least once. A silent gap is the failure that would otherwise go unnoticed.</div>
+        </div>
+        <div class="val"><b data-v="k5">100%</b><span data-v="k5h">2 pages unread</span></div>
+      </div>
+
+      <div class="check">
+        <div>
+          <div class="name">Rescanning doesn't change the verdict</div>
+          <div class="what">The same package re-scanned or re-exported must produce identical findings. Catches sensitivity to scan quality and page layout.</div>
+        </div>
+        <div class="val"><b data-v="k6">99.1%</b><span data-v="k6h">11 held</span></div>
+      </div>
+    </div>
+
+    <p class="tieback">Together these produced the <b data-v="escTie">70</b> items sent back as uncertain — some tripped more than one check. When any of these fall, the system holds the item rather than clearing it, so a weak result costs reviewer time instead of letting a deficiency through.</p>
+  </section>
+
+  <section class="panel" style="margin-top:16px">
+    <h2>Which checks it is good at</h2>
+    <p class="note">What reviewers did with the 190 flagged findings, by type of check.</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Check</th>
+          <th class="num">Flagged</th>
+          <th style="width:36%">Reviewer decision</th>
+          <th class="num">Accepted as-is</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="rule">Signature or date missing</td><td class="num">62</td>
+          <td><div class="split"><i class="a" style="width:96%"></i><i class="e" style="width:2%"></i><i class="r" style="width:2%"></i></div></td><td class="num">96%</td></tr>
+        <tr><td class="rule">Calibration expired at time of test</td><td class="num">24</td>
+          <td><div class="split"><i class="a" style="width:92%"></i><i class="e" style="width:4%"></i><i class="r" style="width:4%"></i></div></td><td class="num">92%</td></tr>
+        <tr><td class="rule">Result outside acceptance criteria</td><td class="num">38</td>
+          <td><div class="split"><i class="a" style="width:89%"></i><i class="e" style="width:8%"></i><i class="r" style="width:3%"></i></div></td><td class="num">89%</td></tr>
+        <tr><td class="rule">Equipment ID does not match P&amp;ID</td><td class="num">19</td>
+          <td><div class="split"><i class="a" style="width:84%"></i><i class="e" style="width:5%"></i><i class="r" style="width:11%"></i></div></td><td class="num">84%</td></tr>
+        <tr><td class="rule">Protocol revision mismatch</td><td class="num">14</td>
+          <td><div class="split"><i class="a" style="width:79%"></i><i class="e" style="width:7%"></i><i class="r" style="width:14%"></i></div></td><td class="num">79%</td></tr>
+        <tr><td class="rule">Deviation raised but not closed</td><td class="num">17</td>
+          <td><div class="split"><i class="a" style="width:76%"></i><i class="e" style="width:12%"></i><i class="r" style="width:12%"></i></div></td><td class="num">76%</td></tr>
+        <tr class="weak"><td class="rule">Attachment missing or illegible</td><td class="num">16</td>
+          <td><div class="split"><i class="a" style="width:62%"></i><i class="e" style="width:6%"></i><i class="r" style="width:32%"></i></div></td><td class="num">62%</td></tr>
+      </tbody>
+    </table>
+    <div class="legend">
+      <span><i style="background:#1B6B48"></i>Accepted</span>
+      <span><i style="background:#A66A00"></i>Edited</span>
+      <span><i style="background:#A32B24"></i>Rejected</span>
+      <span style="margin-left:auto;color:#A66A00">Attachment checks stay under review — scan quality is the limit, not the rules.</span>
+    </div>
+  </section>
+
+  <section class="panel" style="margin-top:16px">
+    <h2>Waiting for you</h2>
+    <p class="note">Four packages are held. Each finding opens on the page it came from.</p>
+    <table class="queue">
+      <thead>
+        <tr><th>Package</th><th>Held because</th><th class="num">Items</th><th class="num">Est. time</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="pkg">OQ-4108 Lyophilizer LY-1</td><td class="why"><span class="pill d">Deficiency</span>Shelf temperature uniformity outside ±1.0 °C at three points</td><td class="num">3</td><td class="num">25 min</td></tr>
+        <tr><td class="pkg">IQ-4412 Autoclave AC-201</td><td class="why"><span class="pill d">Deficiency</span>Two test sheets unsigned; one calibration certificate expired 12 Aug</td><td class="num">3</td><td class="num">20 min</td></tr>
+        <tr><td class="pkg">OQ-3387 WFI Loop Skid</td><td class="why"><span class="pill r">Uncertain</span>Handwritten amendment to acceptance criteria on page 41<em>Held by: answers differed across repeat runs</em></td><td class="num">1</td><td class="num">15 min</td></tr>
+        <tr><td class="pkg">IQ-2290 CIP Skid CIP-03</td><td class="why"><span class="pill r">Uncertain</span>Conflicting equipment tags between protocol body and attachment 2<em>Held by: second reader disagreed</em></td><td class="num">2</td><td class="num">15 min</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  </div>
+
+  <footer>
+    The system prepares and evidences the review. It does not approve packages — a named reviewer signs every qualification decision.<br>
+    Model and prompt versions are under change control; the full regression suite reruns before any change reaches this batch.
+  </footer>
+</div>
+
+<script>
+var DATA = {
+  batch: {
+    caption:"Batch 2026-W36 · 12 IQ/OQ packages · closed 4 September 2026",
+    total:"1,200", clear:"940", flag:"190", esc:"70",
+    pct:"78%", human:"260", total2:"1,200",
+    hrs:"2.4", hrsWas:"6.5", cyc:"3.6", cycWas:"9.2", saved:"49", savedPer:"this batch", pkgCount:"12", escTie:"70",
+    k1:"99.7%", k1h:"4 held", k2:"99.2%", k2h:"9 held", k3:"97.8%", k3h:"26 held",
+    k4:"96.4%", k4h:"43 held", k5:"100%", k5h:"2 pages unread", k6:"99.1%", k6h:"11 held",
+    w:[100,78.3,15.8,5.8]
+  },
+  quarter: {
+    caption:"11 June – 4 September 2026 · 96 IQ/OQ packages",
+    total:"9,840", clear:"7,489", flag:"1,673", esc:"678",
+    pct:"76%", human:"2,351", total2:"9,840",
+    hrs:"2.9", hrsWas:"6.5", cyc:"4.1", cycWas:"9.2", saved:"346", savedPer:"over 90 days", pkgCount:"96", escTie:"678",
+    k1:"99.5%", k1h:"48 held", k2:"98.9%", k2h:"92 held", k3:"97.1%", k3h:"285 held",
+    k4:"95.8%", k4h:"413 held", k5:"99.9%", k5h:"14 pages unread", k6:"98.7%", k6h:"128 held",
+    w:[100,76.1,17.0,6.9]
+  }
+};
+
+var bars = document.querySelectorAll('.bar span');
+
+function render(key, animate){
+  var d = DATA[key];
+  document.getElementById('scope-caption').textContent = d.caption;
+  document.querySelectorAll('[data-v]').forEach(function(el){
+    var k = el.getAttribute('data-v');
+    if (d[k] !== undefined) el.textContent = d[k];
+  });
+  if (animate) bars.forEach(function(b){ b.style.width = '0'; });
+  requestAnimationFrame(function(){
+    bars.forEach(function(b,i){ b.style.width = d.w[i] + '%'; });
+  });
+}
+
+document.querySelectorAll('.scope button').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    document.querySelectorAll('.scope button').forEach(function(b){
+      b.setAttribute('aria-pressed', String(b === btn));
+    });
+    render(btn.getAttribute('data-scope'), true);
+  });
+});
+
+var BATCH_CAPTION_KEY = null;
+function showTab(which){
+  var isRel = which === 'release';
+  document.getElementById('view-release').hidden = !isRel;
+  document.getElementById('view-batch').hidden = isRel;
+  document.getElementById('tab-release').setAttribute('aria-selected', String(isRel));
+  document.getElementById('tab-batch').setAttribute('aria-selected', String(!isRel));
+  document.querySelector('.scope').hidden = isRel;
+  if (isRel){
+    document.getElementById('scope-caption').textContent =
+      'Benchmark: 6 marked-up packages, 412 decisions \u00b7 last run 2 September 2026';
+  } else {
+    var active = document.querySelector('.scope button[aria-pressed="true"]');
+    render(active ? active.getAttribute('data-scope') : 'batch', true);
+  }
+}
+document.getElementById('tab-batch').addEventListener('click', function(){ showTab('batch'); });
+document.getElementById('tab-release').addEventListener('click', function(){ showTab('release'); });
+
+window.addEventListener('load', function(){
+  setTimeout(function(){ render('batch', false); }, 120);
+});
+</script>
+</body>
+</html>
